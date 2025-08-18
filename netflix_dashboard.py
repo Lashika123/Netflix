@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
-import plotly.figure_factory as ff
-import plotly.graph_objects as go
 from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
@@ -25,15 +23,23 @@ st.markdown("""
         font-size: 3rem;
         font-weight: bold;
         margin-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
     .metric-container {
         background-color: #f0f2f6;
         padding: 1rem;
         border-radius: 0.5rem;
         margin: 0.5rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .sidebar .sidebar-content {
         background-color: #0f1419;
+    }
+    .stMetric {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #E50914;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -44,10 +50,11 @@ st.markdown('<h1 class="main-header">🎬 Netflix Titles EDA Dashboard</h1>', un
 @st.cache_data
 def load_data():
     try:
-        # Update this path to your actual CSV file location
-        df = pd.read_csv(r"D:\Netflix Project\netflix_titles_cleaned.csv")  
+        # Load the cleaned data
+        df = pd.read_csv(r'D:\Netflix Project\netflix_titles_cleaned.csv')
+      
         
-        # Data preprocessing
+        # Additional preprocessing for dashboard
         df["date_added"] = pd.to_datetime(df["date_added"], errors="coerce")
         df["release_year"] = pd.to_numeric(df["release_year"], errors="coerce")
         
@@ -61,16 +68,14 @@ def load_data():
         if 'duration' in df.columns:
             df['duration_mins'] = df.loc[df['type'].str.lower() == "movie", "duration"].str.extract(r"(\d+)").astype(float)
         
-        # Clean country data
-        df['country'] = df['country'].fillna('Unknown')
-        
         # Clean missing values
+        df['country'] = df['country'].fillna('Unknown')
         df['rating'] = df['rating'].fillna('Not Rated')
         df['listed_in'] = df['listed_in'].fillna('Unknown Genre')
         
         return df
     except FileNotFoundError:
-        st.error("❌ Netflix dataset file not found! Please ensure 'netflix_titles_cleaned.csv' is in the correct directory.")
+        st.error("❌ Netflix dataset file not found! Please ensure 'netflix_titles_cleaned.csv' is in the current directory.")
         return pd.DataFrame()
     except Exception as e:
         st.error(f"❌ Error loading data: {str(e)}")
@@ -407,7 +412,7 @@ if len(filtered) > 0:
         st.write(f"• Top Producer: {top_country}")
         
         # Most common rating
-        top_rating = filtered['rating'].mode().iloc[0]
+        top_rating = filtered['rating'].mode().iloc
         st.write(f"• Most Common Rating: {top_rating}")
 
 # Data Table
